@@ -5,8 +5,8 @@ import subprocess
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
-def run(cmd, **kwargs):
-    return subprocess.run(
+def run(cmd, successcode=0, **kwargs):
+    result = subprocess.run(
         cmd,
         shell=True,
         check=True,
@@ -14,6 +14,17 @@ def run(cmd, **kwargs):
         capture_output=True,
         **kwargs
     )
+
+    success = result.returncode == successcode
+
+    if not success:
+        print("ERROR Running:", cmd)
+        print("stderr:")
+        print(result.stderr)
+        print("stdout:")
+        print(result.stdout)
+
+    return result, success
 
 def main():
     # install age key
@@ -24,9 +35,12 @@ def main():
 
     print("Age key installed at /opt/age.key")
 
+    # clear stale payload dir if present (e.g. from a previous session)
+    shutil.rmtree("/opt/payload", ignore_errors=True)
+
     # run payload
     run("git clone https://github.com/0x038b5c/claude-payload /opt/payload --depth 1")
-    result = run("PYTHONPATH=/opt/payload python -m src.main")
+    result, _ = run("PYTHONPATH=/opt/payload python -m src.main")
 
     if result.stderr:
         print("ERROR:")
