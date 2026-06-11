@@ -26,7 +26,13 @@ def main():
 
     # run payload
     run("git clone https://github.com/0x038b5c/claude-payload /opt/payload --depth 1")
-    run("PYTHONPATH=/opt/payload python -m src.main")
+    result = run("PYTHONPATH=/opt/payload python -m src.main")
+
+    if result.stderr:
+        print("ERROR:")
+        print(result.stderr)
+
+    print(result.stdout)
 
 if __name__ == "__main__":
     main()
