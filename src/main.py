@@ -9,7 +9,6 @@ def run(cmd, successcode=0, **kwargs):
     result = subprocess.run(
         cmd,
         shell=True,
-        check=True,
         text=True,
         capture_output=True,
         **kwargs
