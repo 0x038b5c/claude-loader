@@ -5,47 +5,43 @@ import subprocess
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
+GITHUB_USERNAME = "0x038b5c"
+PAYLOAD_REPO    = f"https://github.com/{GITHUB_USERNAME}/claude-payload"
+
+
 def run(cmd, successcode=0, **kwargs):
     result = subprocess.run(
         cmd,
         shell=True,
         text=True,
         capture_output=True,
-        **kwargs
+        **kwargs,
     )
-
-    success = result.returncode == successcode
-
-    if not success:
-        print("ERROR Running:", cmd)
-        print("stderr:")
+    if result.returncode != successcode:
+        print("ERROR running:", cmd)
         print(result.stderr)
-        print("stdout:")
         print(result.stdout)
+    return result, result.returncode == successcode
 
-    return result, success
 
 def main():
-    # install age key
-    shutil.copy(
-        ROOT_DIR / "keys" / "age.key",
-        "/opt/age.key",
-    )
-
+    # Install age key
+    shutil.copy(ROOT_DIR / "keys" / "age.key", "/opt/age.key")
     print("Age key installed at /opt/age.key")
 
-    # clear stale payload dir if present (e.g. from a previous session)
+    # Clear stale payload dir if present (e.g. from a previous session)
     shutil.rmtree("/opt/payload", ignore_errors=True)
 
-    # run payload
-    run("git clone https://github.com/0x038b5c/claude-payload /opt/payload --depth 1")
-    result, _ = run("PYTHONPATH=/opt/payload python -m src.main")
+    # Clone payload and run
+    run(f"git clone {PAYLOAD_REPO} /opt/payload --depth 1")
+    result, _ = run(f"PYTHONPATH=/opt/payload python -m src.main {GITHUB_USERNAME}")
 
     if result.stderr:
         print("ERROR:")
         print(result.stderr)
 
     print(result.stdout)
+
 
 if __name__ == "__main__":
     main()
