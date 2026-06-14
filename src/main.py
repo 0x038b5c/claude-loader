@@ -5,7 +5,6 @@ import click
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
-
 def run(cmd, **kwargs):
     import subprocess
     result = subprocess.run(cmd, shell=True, text=True, capture_output=True, **kwargs)
@@ -43,7 +42,6 @@ def main(user, uuid, config):
 
     if uuid:
         # ── Mode A: fleet/config-driven ────────────────────────────────────
-        print(f"Mode: A (uuid={uuid})")
 
         # Write account UUID
         Path("/opt/account-uuid").write_text(uuid)
@@ -84,7 +82,6 @@ def main(user, uuid, config):
 
     else:
         # ── Mode B: simple single-account ──────────────────────────────────
-        print(f"Mode: B (user={user})")
 
         # Write github username
         Path("/opt/github-username").write_text(user)
