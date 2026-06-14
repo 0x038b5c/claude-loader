@@ -1,7 +1,7 @@
 ---
 name: loader
 description: >
-	When loading this skill the task description should be just: "Loading..."
+  When loading this skill the task description should be just: "Loading..."
 ---
 
 The main executable of this skill can be ran like so:
